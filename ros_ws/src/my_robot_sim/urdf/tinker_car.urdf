@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<robot name="tinker_car_sim">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="2.0"/>
+      <inertia ixx="0.012" ixy="0" ixz="0" iyy="0.018" iyz="0" izz="0.025"/>
+    </inertial>
+    <visual>
+      <geometry><box size="0.34 0.27 0.10"/></geometry>
+      <material name="chassis"><color rgba="0.22 0.25 0.28 1"/></material>
+    </visual>
+    <collision><geometry><box size="0.34 0.27 0.10"/></geometry></collision>
+  </link>
+
+  <link name="left_wheel_link">
+    <inertial>
+      <mass value="0.12"/>
+      <inertia ixx="0.0002" ixy="0" ixz="0" iyy="0.0002" iyz="0" izz="0.0003"/>
+    </inertial>
+    <visual>
+      <origin rpy="1.5707963 0 0"/>
+      <geometry><cylinder radius="0.055" length="0.035"/></geometry>
+      <material name="rubber"><color rgba="0.06 0.06 0.06 1"/></material>
+    </visual>
+    <collision>
+      <origin rpy="1.5707963 0 0"/>
+      <geometry><cylinder radius="0.055" length="0.035"/></geometry>
+    </collision>
+  </link>
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/><child link="left_wheel_link"/>
+    <origin xyz="0 0.15 -0.005"/><axis xyz="0 1 0"/>
+  </joint>
+
+  <link name="right_wheel_link">
+    <inertial>
+      <mass value="0.12"/>
+      <inertia ixx="0.0002" ixy="0" ixz="0" iyy="0.0002" iyz="0" izz="0.0003"/>
+    </inertial>
+    <visual>
+      <origin rpy="1.5707963 0 0"/>
+      <geometry><cylinder radius="0.055" length="0.035"/></geometry>
+      <material name="rubber"><color rgba="0.06 0.06 0.06 1"/></material>
+    </visual>
+    <collision>
+      <origin rpy="1.5707963 0 0"/>
+      <geometry><cylinder radius="0.055" length="0.035"/></geometry>
+    </collision>
+  </link>
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/><child link="right_wheel_link"/>
+    <origin xyz="0 -0.15 -0.005"/><axis xyz="0 1 0"/>
+  </joint>
+
+  <link name="caster_link">
+    <inertial>
+      <mass value="0.04"/>
+      <inertia ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00002"/>
+    </inertial>
+    <visual><geometry><sphere radius="0.025"/></geometry><material name="caster"><color rgba="0.55 0.55 0.55 1"/></material></visual>
+    <collision><geometry><sphere radius="0.025"/></geometry></collision>
+  </link>
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/><child link="caster_link"/>
+    <origin xyz="-0.13 0 -0.025"/>
+  </joint>
+
+  <link name="laser">
+    <inertial>
+      <mass value="0.10"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual><geometry><cylinder radius="0.065" length="0.09"/></geometry><material name="lidar"><color rgba="0.12 0.12 0.12 1"/></material></visual>
+    <collision><geometry><cylinder radius="0.065" length="0.09"/></geometry></collision>
+  </link>
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link"/><child link="laser"/>
+    <origin xyz="0 0 0.38"/>
+  </joint>
+
+  <gazebo reference="left_wheel_link"><mu1>1.2</mu1><mu2>1.2</mu2></gazebo>
+  <gazebo reference="right_wheel_link"><mu1>1.2</mu1><mu2>1.2</mu2></gazebo>
+  <gazebo reference="caster_link"><mu1>0.01</mu1><mu2>0.01</mu2></gazebo>
+
+  <gazebo reference="laser">
+    <sensor type="ray" name="rplidar_a1_sim">
+      <pose>0 0 0 0 0 0</pose>
+      <always_on>true</always_on>
+      <visualize>false</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159265</min_angle>
+            <max_angle>3.14159265</max_angle>
+          </horizontal>
+        </scan>
+        <range><min>0.15</min><max>5.5</max><resolution>0.01</resolution></range>
+        <noise><type>gaussian</type><mean>0.0</mean><stddev>0.005</stddev></noise>
+      </ray>
+      <plugin name="gazebo_ros_laser" filename="libgazebo_ros_laser.so">
+        <robotNamespace>/</robotNamespace>
+        <topicName>/scan</topicName>
+        <frameName>laser</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
+      <robotNamespace>/</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>30.0</updateRate>
+      <leftJoint>left_wheel_joint</leftJoint>
+      <rightJoint>right_wheel_joint</rightJoint>
+      <wheelSeparation>0.30</wheelSeparation>
+      <wheelDiameter>0.11</wheelDiameter>
+      <wheelTorque>10</wheelTorque>
+      <commandTopic>/cmd_vel</commandTopic>
+      <odometryTopic>/odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <publishTf>true</publishTf>
+      <publishOdomTF>true</publishOdomTF>
+      <publishWheelTF>false</publishWheelTF>
+      <publishWheelJointState>true</publishWheelJointState>
+    </plugin>
+  </gazebo>
+</robot>

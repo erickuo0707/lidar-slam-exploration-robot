@@ -1,0 +1,6 @@
+{
+  "name": "Tinker Board ROS Noetic headless simulation",
+  "image": "ros:noetic-ros-base-focal",
+  "remoteUser": "root",
+  "postCreateCommand": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y ros-noetic-gazebo-ros-pkgs ros-noetic-hector-slam ros-noetic-navigation ros-noetic-robot-state-publisher ros-noetic-rviz python3-opencv python3-numpy"
+}
