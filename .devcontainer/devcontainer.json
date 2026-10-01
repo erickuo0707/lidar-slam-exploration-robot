@@ -1,6 +1,13 @@
+// 開發容器設定（Dev Container）
+// 在 GitHub 按「Code → Codespaces → Create codespace」，或在 VS Code 用 Dev Containers 開啟本專案時，
+// 會依照這份設定自動建立一個 Ubuntu 20.04 + ROS Noetic 的環境，並安裝 Gazebo、Hector SLAM、RViz、OpenCV 等套件。
+// 用途：沒有 Tinker Board、雷達和馬達時，也能在雲端或自己的電腦上執行 Gazebo 模擬（見 ros_ws/src/my_robot_sim/README.md）。
+// 實體自走車不需要這個檔案。
 {
   "name": "Tinker Board ROS Noetic headless simulation",
+  // 基底映像檔：官方 ROS Noetic（Ubuntu 20.04 focal）
   "image": "ros:noetic-ros-base-focal",
   "remoteUser": "root",
+  // 容器建立後自動安裝：Gazebo 模擬、Hector SLAM、導航套件、RViz 與場景辨識需要的 OpenCV／NumPy
   "postCreateCommand": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y ros-noetic-gazebo-ros-pkgs ros-noetic-hector-slam ros-noetic-navigation ros-noetic-robot-state-publisher ros-noetic-rviz python3-opencv python3-numpy"
 }
